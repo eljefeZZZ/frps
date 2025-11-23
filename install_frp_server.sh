@@ -4,6 +4,13 @@ set -e
 
 echo "=== frp 服务端一键安装及配置脚本 ==="
 
+# 检查是否为 root 用户
+if [ "$(id -u)" != "0" ]; then
+   echo "错误：该脚本必须以 root 用户运行！" 
+   echo "请使用 root 用户登录，或在命令前加 sudo"
+   exit 1
+fi
+
 read -p "绑定端口 [7000]: " bind_port
 bind_port=${bind_port:-7000}
 
@@ -58,7 +65,7 @@ EOF
 echo "创建 systemd 服务文件..."
 SERVICE_FILE="/etc/systemd/system/frps.service"
 
-sudo bash -c "cat > $SERVICE_FILE" <<EOF
+cat > $SERVICE_FILE <<EOF
 [Unit]
 Description=frp server
 After=network.target
@@ -74,15 +81,15 @@ WantedBy=multi-user.target
 EOF
 
 echo "重载 systemd 配置，加自启动..."
-sudo systemctl daemon-reload
-sudo systemctl enable frps
+systemctl daemon-reload
+systemctl enable frps
 
 echo "启动 frps 服务..."
-sudo systemctl start frps
+systemctl start frps
 
 echo "frp服务端安装并启动完成！"
 echo "配置文件路径: $INSTALL_DIR/frps.ini"
 echo "服务状态:"
-sudo systemctl status frps --no-pager
+systemctl status frps --no-pager
 
 echo "脚本执行完毕，祝你使用愉快！"
