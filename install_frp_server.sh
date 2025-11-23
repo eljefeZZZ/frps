@@ -20,7 +20,7 @@ read -p "Dashboard用户名 [admin]: " dashboard_user
 dashboard_user=${dashboard_user:-admin}
 
 read -s -p "Dashboard密码 [请输入]: " dashboard_pwd
-echo
+echo ""
 if [ -z "$dashboard_pwd" ]; then
   echo "密码不能为空，退出！"
   exit 1
