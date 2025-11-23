@@ -8,4 +8,4 @@ curl -sSL https://github.com/eljefeZZZ/frp-/raw/refs/heads/main/install_frp_serv
 ```
 curl -sSL https://raw.githubusercontent.com/eljefeZZZ/frp-/refs/heads/main/uninstall_frp.sh | bash
 ```
-代码完全由Gmini3 Pro编写，本人没有任何编程基础，仅在自己的机器上跑通了，仅供参考！！！
+代码完全由Gmini3 Pro编写，本人没有任何编程基础，上传目的是为了自己以后使用方便，仅在自己的机器上跑通了，仅供新手参考！！！
