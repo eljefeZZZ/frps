@@ -29,7 +29,6 @@
 ```bash
 curl -sSL https://github.com/eljefeZZZ/frp-/raw/refs/heads/main/install_frp_server.sh | tr -d '\r' > frp.sh && chmod +x frp.sh && ./frp.sh
 ```
----
 
 > **提示**：脚本需要 `root` 权限运行。如果不是 root 用户，请先执行 `sudo -i` 切换。
 
