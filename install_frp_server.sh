@@ -51,7 +51,7 @@ echo "------------------------------------------------"
 
 # 获取本机公网IP (尝试多个源)
 echo "正在获取本机公网 IP..."
-SERVER_IP=$(curl -s http://ifconfig.me || curl -s http://api.ipify.org || curl -s http://ci.ip.sb)
+SERVER_IP=$(curl -s -4 http://ifconfig.me || curl -s -4 http://api.ipify.org || curl -s -4 http://ci.ip.sb)
 if [ -z "$SERVER_IP" ]; then
     SERVER_IP="无法获取，请手动确认"
 fi
@@ -134,4 +134,5 @@ echo -e "配置文件路径: ${INSTALL_DIR}/frps.ini"
 echo -e "查看运行状态: systemctl status frps"
 echo -e "重启服务命令: systemctl restart frps"
 echo ""
+
 
