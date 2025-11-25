@@ -221,6 +221,7 @@ view_config() {
     echo -e " ---------------------------------------------"
     echo -e " 连接 Token     : ${RED}${token}${PLAIN}  (客户端填写此密钥)"
     echo -e "${GREEN}==============================================${PLAIN}"
+    echo -e "${YELLOW}提示：如果在客户端使用了自定义远程端口，请务必在下方菜单中手动放行该端口。${PLAIN}"
     echo ""
 }
 
@@ -238,7 +239,7 @@ show_menu() {
     echo -e "${GREEN}8.${PLAIN} 重启 frps 服务"
     echo -e "${GREEN}9.${PLAIN} 停止 frps 服务"
     echo -e "${GREEN}10.${PLAIN} 卸载 frps"
-    echo -e "${GREEN}11.${PLAIN} 手动放行其他端口 (如 6001)"
+    echo -e "${GREEN}11.${PLAIN} 手动放行其他端口"
     echo "-----------------------------"
     echo -e "${GREEN}0.${PLAIN} 退出"
     echo ""
