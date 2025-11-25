@@ -26,7 +26,7 @@
 
 无论你是**初次安装**，还是**后期管理**（修改配置/卸载），都只需要执行这一条命令：
 
----
+```bash
 curl -sSL https://github.com/eljefeZZZ/frp-/raw/refs/heads/main/install_frp_server.sh | tr -d '\r' > frp.sh && chmod +x frp.sh && ./frp.sh
 
 ---
