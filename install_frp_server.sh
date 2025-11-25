@@ -40,7 +40,7 @@ modify_config() {
     echo -e "${GREEN}$name 已修改为 $new_val，正在重启服务...${PLAIN}"
     systemctl restart frps
     
-    # 修改配置后，尝试自动更新防火墙规则（仅针对端口修改）
+    # 修改端口相关配置后，自动尝试放行新端口
     if [[ "$key" == *"port"* ]]; then
         open_port $new_val
     fi
@@ -73,11 +73,10 @@ open_port() {
         fi
     fi
     
-    # 检查 iptables (仅当没有 ufw/firewalld 时尝试，避免冲突)
+    # 检查 iptables
     if ! command -v ufw > /dev/null 2>&1 && ! command -v firewall-cmd > /dev/null 2>&1; then
         if command -v iptables > /dev/null 2>&1; then
             iptables -I INPUT -p tcp --dport $port -j ACCEPT >/dev/null 2>&1
-            # 尝试保存规则，适配不同系统
             netfilter-persistent save >/dev/null 2>&1 || service iptables save >/dev/null 2>&1
             echo -e "${GREEN}防火墙(iptables) 已放行端口: $port${PLAIN}"
         fi
@@ -169,13 +168,11 @@ EOF
     systemctl enable frps >/dev/null 2>&1
     systemctl restart frps
     
-    # --- 自动配置防火墙 ---
     echo "正在配置防火墙..."
     open_port $bind_port
     open_port $vhost_http_port
     open_port $vhost_https_port
     open_port $dashboard_port
-    # 额外提示：如果用户需要用其他端口，建议在这里也默认放行一些常用区间，或者提示用户
     
     view_config
 }
@@ -224,8 +221,6 @@ view_config() {
     echo -e " ---------------------------------------------"
     echo -e " 连接 Token     : ${RED}${token}${PLAIN}  (客户端填写此密钥)"
     echo -e "${GREEN}==============================================${PLAIN}"
-    echo -e "${YELLOW}注意：如果在客户端使用了自定义端口（如 6001），请务必在 VPS 上放行该端口：${PLAIN}"
-    echo -e "命令示例: ufw allow 6001/tcp"
     echo ""
 }
 
@@ -236,34 +231,37 @@ show_menu() {
     echo -e "${GREEN}2.${PLAIN} 修改绑定端口 (Bind Port)"
     echo -e "${GREEN}3.${PLAIN} 修改 HTTP 端口"
     echo -e "${GREEN}4.${PLAIN} 修改 HTTPS 端口"
-    echo -e "${GREEN}5.${PLAIN} 修改 Token (连接密钥)"
-    echo -e "${GREEN}6.${PLAIN} 修改 Dashboard 密码"
+    echo -e "${GREEN}5.${PLAIN} 修改 Dashboard 端口"
+    echo -e "${GREEN}6.${PLAIN} 修改 Token (连接密钥)"
+    echo -e "${GREEN}7.${PLAIN} 修改 Dashboard 密码"
     echo "-----------------------------"
-    echo -e "${GREEN}7.${PLAIN} 重启 frps 服务"
-    echo -e "${GREEN}8.${PLAIN} 停止 frps 服务"
-    echo -e "${GREEN}9.${PLAIN} 卸载 frps"
-    echo -e "${GREEN}10.${PLAIN} 手动放行其他端口 (如 6001)"
+    echo -e "${GREEN}8.${PLAIN} 重启 frps 服务"
+    echo -e "${GREEN}9.${PLAIN} 停止 frps 服务"
+    echo -e "${GREEN}10.${PLAIN} 卸载 frps"
+    echo -e "${GREEN}11.${PLAIN} 手动放行其他端口 (如 6001)"
     echo "-----------------------------"
     echo -e "${GREEN}0.${PLAIN} 退出"
     echo ""
-    read -p "请输入选项 [0-9]: " choice
+    read -p "请输入选项 [0-11]: " choice
     
     case $choice in
         1) view_config && read -p "按回车键返回菜单..." && show_menu ;;
         2) modify_config "bind_port" "绑定端口" ;;
         3) modify_config "vhost_http_port" "HTTP 端口" ;;
         4) modify_config "vhost_https_port" "HTTPS 端口" ;;
-        5) modify_config "token" "Token" ;;
-        6) modify_config "dashboard_pwd" "Dashboard 密码" ;;
-        7) systemctl restart frps && echo -e "${GREEN}服务已重启！${PLAIN}" && sleep 2 && show_menu ;;
-        8) systemctl stop frps && echo -e "${RED}服务已停止！${PLAIN}" && sleep 2 && show_menu ;;
-        9) uninstall_frps ;;
-        10) read -p "请输入要放行的端口号: " p && open_port $p && read -p "按回车键继续..." && show_menu ;;
+        5) modify_config "dashboard_port" "Dashboard 端口" ;;
+        6) modify_config "token" "Token" ;;
+        7) modify_config "dashboard_pwd" "Dashboard 密码" ;;
+        8) systemctl restart frps && echo -e "${GREEN}服务已重启！${PLAIN}" && sleep 2 && show_menu ;;
+        9) systemctl stop frps && echo -e "${RED}服务已停止！${PLAIN}" && sleep 2 && show_menu ;;
+        10) uninstall_frps ;;
+        11) read -p "请输入要放行的端口号: " p && open_port $p && read -p "按回车键继续..." && show_menu ;;
         0) exit 0 ;;
         *) echo -e "${RED}无效选项！${PLAIN}" && sleep 1 && show_menu ;;
     esac
 }
 
+# --- 入口逻辑 ---
 if [ -f "$CONF_FILE" ]; then
     show_menu
 else
