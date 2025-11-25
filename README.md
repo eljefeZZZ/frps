@@ -74,11 +74,10 @@ curl -sSL https://github.com/eljefeZZZ/frp-/raw/refs/heads/main/install_frp_serv
 
 卸载 frps
 
-手动放行其他端口 (如 6001)
+手动放行其他端口
 
 退出
 
-text
 
 ---
 
